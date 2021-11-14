@@ -6,7 +6,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
+   
 </head>
 <body>
 
@@ -14,26 +15,26 @@
     <div class="heading">
         <h2>Inventory</h2>
 
-        <p><input type="text" id="myinput" placeholder="Search..." title="Type in something"></p>
+        <p><input type="text" v-model="search" placeholder="Product search..."/></p>
         <p>Click the header to sort column</p>
 
     </div>
     <table>
         <thead>
             <tr>
-                <th><span>Nem Code   <i class="caret"></span></th>
-                    <th><span @click="sort('product')"  >Product    <i class="caret"></span></th>
-                <th><span @click="sort('package')"  >Package    <i class="caret"></span></th>
-                <th><span @click="sort('available_units')"    >Available Units   <i class="caret"></span></th>
-                <th><span @click="sort('category')">Category   <i class="caret"></span></th>
-                <th><span @click="sort('last_udated')">Last Updated     <i class="caret"></span></th>
-                <th><span>Edit Available Units<i class="caret"></span></th>
+                <th>Nem Code</th>
+                <th @click="sort('product')">Product<i class="fa fa-fw fa-sort"></i></th>
+                <th><span @click="sort('package')">Package<i class="fa fa-fw fa-sort"></i></span></th>
+                <th><span @click="sort('available_units')">Available Units<i class="fa fa-fw fa-sort"></i></span></th>
+                <th><span @click="sort('category')">Category<i class="fa fa-fw fa-sort"></i></span></th>
+                <th><span @click="sort('last_udated')">Last Updated<i class="fa fa-fw fa-sort"></i></span></th>
+                <th><span>Edit Available Units</span></th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="row in rows">
                 <td>{{ row.code }}</td>
-                <td>{{ row.product }}</td>
+                <td style="color:#428063;">{{ row.product }}</td>
                 <td>{{ row.package }}</td>
                 <td>{{ row.available_units }}</td>
                 <td>{{ row.category }}</td>
@@ -50,12 +51,20 @@
         el: '#app',
         data: {
             rows: [
-            { code: 'ACCI', product: "Apple Grocery",       package: "40 LB", available_units: "3,368,066", category: "Fruits", last_udated: '2021-02-05 08:28:36'},
-            { code: 'ACCI', product: "Pineapple cronless",  package: "7 CT", available_units: "6,462,020", category: "Fruits", last_udated: '2021-02-03 19:49:33'},
-            { code: 'ACCI', product: "Banana Green",        package: "8 CT", available_units: "8,634,948", category: "Fruits", last_udated: '2021-02-02 19:17:15'},
-            { code: 'ACCI', product: "Banana Green tip",    package: "40 LB", available_units: "2,592,335", category: "Fruits", last_udated: '2021-02-02 09:45:33'},
+                { code: 'ACCI', product: "Apple Grocery",       package: "40 LB", available_units: "3,368,066", category: "Fruits", last_udated: '2021-02-05 08:28:36'},
+                { code: 'ACCI', product: "Pineapple cronless",  package: "7 CT", available_units: "6,462,020", category: "Fruits", last_udated: '2021-02-03 19:49:33'},
+                { code: 'ACCI', product: "Banana Green",        package: "8 CT", available_units: "8,634,948", category: "Fruits", last_udated: '2021-02-02 19:17:15'},
+                { code: 'ACCI', product: "Banana Green tip",    package: "40 LB", available_units: "2,592,335", category: "Fruits", last_udated: '2021-02-02 09:45:33'},
             ],
-            NewUnits:0
+            NewUnits:0,
+            search: '',
+            searching: false,
+            rowsBuffer: [
+                { code: 'ACCI', product: "Apple Grocery",       package: "40 LB", available_units: "3,368,066", category: "Fruits", last_udated: '2021-02-05 08:28:36'},
+                { code: 'ACCI', product: "Pineapple cronless",  package: "7 CT", available_units: "6,462,020", category: "Fruits", last_udated: '2021-02-03 19:49:33'},
+                { code: 'ACCI', product: "Banana Green",        package: "8 CT", available_units: "8,634,948", category: "Fruits", last_udated: '2021-02-02 19:17:15'},
+                { code: 'ACCI', product: "Banana Green tip",    package: "40 LB", available_units: "2,592,335", category: "Fruits", last_udated: '2021-02-02 09:45:33'},
+            ]
         },
         methods: {
             sort(col) {
@@ -69,12 +78,22 @@
                 })
             }
         },
-        computed: {
-            "columns": function columns() {
-            if (this.rows.length == 0) {
-                return [];
-            }
-            return Object.keys(this.rows[0])
+        computed: {},
+        watch : {
+            search(newSearch){
+                if(newSearch != ''){
+                    this.searching = true
+                    console.log(newSearch)
+                    this.rows  = _.filter(this.rows, row =>
+                        row.code.toString().indexOf(newSearch.toLowerCase()) !== -1 ||
+                        row.product.toString().toLowerCase().indexOf(newSearch.toLowerCase()) !==  -1 ||
+                        row.category.toString().toLowerCase().indexOf(newSearch.toLowerCase()) !== -1 
+                    )
+                }else{
+                    console.log(newSearch)
+                    console.log(this.rowsBuffer);
+                    this.rows = this.rowsBuffer;
+                }
             }
         }
     });
@@ -82,9 +101,19 @@
 </body>
 <style>
         table,
-        th,
+        th ,
         td {
             border: 1px solid;
+        }
+
+        th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #6a6e80;
+            color: rgb(56, 26, 26);
+            cursor: pointer;
+            padding: 8px;
+            min-width: 30px;
         }
 
         table {
