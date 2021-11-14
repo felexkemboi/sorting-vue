@@ -58,7 +58,6 @@
             ],
             NewUnits:0,
             search: '',
-            searching: false,
             rowsBuffer: [
                 { code: 'ACCI', product: "Apple Grocery",       package: "40 LB", available_units: "3,368,066", category: "Fruits", last_udated: '2021-02-05 08:28:36'},
                 { code: 'ACCI', product: "Pineapple cronless",  package: "7 CT", available_units: "6,462,020", category: "Fruits", last_udated: '2021-02-03 19:49:33'},
@@ -82,16 +81,12 @@
         watch : {
             search(newSearch){
                 if(newSearch != ''){
-                    this.searching = true
-                    console.log(newSearch)
                     this.rows  = _.filter(this.rows, row =>
                         row.code.toString().indexOf(newSearch.toLowerCase()) !== -1 ||
                         row.product.toString().toLowerCase().indexOf(newSearch.toLowerCase()) !==  -1 ||
                         row.category.toString().toLowerCase().indexOf(newSearch.toLowerCase()) !== -1 
                     )
                 }else{
-                    console.log(newSearch)
-                    console.log(this.rowsBuffer);
                     this.rows = this.rowsBuffer;
                 }
             }
@@ -100,58 +95,38 @@
 </script>
 </body>
 <style>
-        table,
-        th ,
-        td {
-            border: 1px solid;
-        }
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 80%;
+        border-collapse: collapse;
+        margin: auto;
+        border-right: 1px solid #f0f0f3;
+        border-bottom: 1px solid #f0f0f3;
+    }
 
-        th {
-            text-transform: uppercase;
-            text-align: left;
-            background: #6a6e80;
-            color: rgb(56, 26, 26);
-            cursor: pointer;
-            padding: 8px;
-            min-width: 30px;
-        }
+    table th {
+        text-align: left;
+        background: #f0f0f3;
+        cursor: pointer;
+        padding: 2px;
+        min-width: 30px;
+    }
+    table th:hover {
+        background: #696b74;
+    }
+    table td {
+        text-align: left;
+        padding: 8px;
+        border-right: 1px solid #f0f0f3;
+        border-bottom: 1px solid #f0f0f3;
+    }
+    table td:last-child {
+        border-right: none;
+    }
 
-        table {
-            margin: 0 auto;
-        }
-
-        tbody {
-            white-space: nowrap;
-        }
-
-        th,
-        td {
-            padding: 5px 10px;
-            border-top-width: 0;
-            border-left-width: 0;
-        }
-
-        th {
-            position: sticky;
-            top: 0;
-            background: #fff;
-            vertical-align: bottom;
-        }
-
-        th:last-child,
-        td:last-child {
-            border-right-width: 0;
-        }
-
-        tr:last-child td {
-            border-bottom-width: 0;
-        }
-
-        .heading {
-            max-width: 400px;
-            margin: 0 auto;
-            border-spacing: 0;
-        }
-    </style>
+    .heading {
+        margin: auto;
+    }
+</style>
 </style>
 </html>
